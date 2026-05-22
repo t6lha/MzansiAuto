@@ -1969,16 +1969,474 @@ function showToast(msg){
   setTimeout(()=>el.remove(),3500);
 }
 
+// ===== EXTENDED PARTS DATA =====
+const ALL_PARTS = [
+  // BMW
+  {name:'Front Bumper Assembly',make:'BMW',model:'3 Series E90',year:'2008–2012',price:2800,oldPrice:4200,cond:'used',cat:'body',compat:'E90 318i 320i 325i 330i',partNo:'BMW-FB-E90-001',oem:'51117162769',avail:'in',icon:'🚗',desc:'Complete front bumper with grille inserts and fog light bezels. Grade A condition. Minor scuffs on underside.'},
+  {name:'Engine 2.0i N46B20',make:'BMW',model:'3 Series E90',year:'2006–2010',price:24500,oldPrice:null,cond:'used',cat:'engine',compat:'318i N46',partNo:'BMW-ENG-N46-001',oem:'11000432977',avail:'in',icon:'⚙️',desc:'Complete engine assembly. 98,000km. Oil consumption within spec. Supplied with 30-day engine guarantee.'},
+  {name:'Rear Diff 3.07 Ratio',make:'BMW',model:'E46 3 Series',year:'1998–2006',price:4800,oldPrice:6500,cond:'used',cat:'drivetrain',compat:'316i 318i 320i',partNo:'BMW-DIFF-E46-307',oem:'33107507540',avail:'in',icon:'⚙️',desc:'Rear differential in good working order. No whine or clunks. Tested before removal.'},
+  {name:'Front Left Headlight',make:'BMW',model:'5 Series F10',year:'2010–2016',price:5200,oldPrice:7800,cond:'used',cat:'exterior',compat:'520i 528i 530d 535i',partNo:'BMW-HL-F10-L',oem:'63117271907',avail:'low',icon:'💡',desc:'Xenon adaptive headlight. Left hand side. Lens clear, no cracks. LED DRL fully functional.'},
+  {name:'Power Steering Pump',make:'BMW',model:'X5 E53',year:'2000–2006',price:1650,oldPrice:null,cond:'oem',cat:'steering',compat:'3.0i 4.4i',partNo:'BMW-PSP-E53',oem:'32416756582',avail:'in',icon:'🔧',desc:'OEM-spec replacement power steering pump. Fits all E53 X5 models. New unit in box.'},
+  {name:'Radiator Complete',make:'BMW',model:'3 Series E46',year:'1998–2006',price:1200,oldPrice:1800,cond:'new',cat:'cooling',compat:'316i 318i 320i 323i 325i',partNo:'BMW-RAD-E46',oem:'17117514842',avail:'in',icon:'❄️',desc:'Brand new aftermarket radiator. Aluminium core with plastic tanks. Direct OEM replacement fit.'},
+  // Mercedes
+  {name:'C-Class W204 Front Bumper',make:'Mercedes-Benz',model:'C-Class W204',year:'2007–2014',price:3400,oldPrice:5100,cond:'used',cat:'body',compat:'C180 C200 C220 C250 C300',partNo:'MB-FB-W204',oem:'2048851025',avail:'in',icon:'🚗',desc:'Front bumper with PDC holes. Silver. Some stone chips but no cracks. Complete assembly.'},
+  {name:'Headlight Left W204',make:'Mercedes-Benz',model:'C-Class W204',year:'2007–2014',price:3200,oldPrice:4800,cond:'used',cat:'exterior',compat:'W204 C180 C200 C220',partNo:'MB-HL-W204L',oem:'2048209261',avail:'low',icon:'💡',desc:'Halogen headlight. Left side. Lens is clear, no condensation. All bulbs working.'},
+  {name:'Engine 2.2 CDI OM651',make:'Mercedes-Benz',model:'E-Class W212',year:'2009–2016',price:28000,oldPrice:null,cond:'used',cat:'engine',compat:'E220 CDI BlueTEC',partNo:'MB-ENG-OM651',oem:'6510104746',avail:'in',icon:'⚙️',desc:'Complete OM651 engine. 145,000km. Full service history available. Includes all ancillaries.'},
+  {name:'Automatic Gearbox 7G-Tronic',make:'Mercedes-Benz',model:'C-Class W204',year:'2007–2014',price:16500,oldPrice:null,cond:'used',cat:'engine',compat:'C200 C220 C250 petrol',partNo:'MB-GBX-7G-W204',oem:'7242770056',avail:'in',icon:'⚙️',desc:'7-speed automatic gearbox. Shifts smoothly through all gears. 120,000km. Tested on vehicle.'},
+  // Audi
+  {name:'A4 B8 Radiator',make:'Audi',model:'A4 B8',year:'2008–2016',price:2100,oldPrice:null,cond:'oem',cat:'cooling',compat:'2.0 TDI 2.0 TFSI',partNo:'AU-RAD-B8',oem:'8K0121251AA',avail:'in',icon:'❄️',desc:'OEM-spec cooling radiator for A4 B8/B8.5. Aluminium construction. Pressure tested. Brand new.'},
+  {name:'Front Left Strut Assembly',make:'Audi',model:'A3 8P',year:'2003–2013',price:1800,oldPrice:2600,cond:'used',cat:'suspension',compat:'1.6 1.8T 2.0 TDI',partNo:'AU-STRUT-8P-FL',oem:'1K0413031BG',avail:'in',icon:'🔧',desc:'Front left strut. Good condition. Spring intact with no corrosion. Shock absorber still firm.'},
+  // Volkswagen
+  {name:'Golf 6 2.0 TDI Engine',make:'Volkswagen',model:'Golf 6',year:'2008–2013',price:19500,oldPrice:null,cond:'used',cat:'engine',compat:'2.0 TDI CBDC CFHC',partNo:'VW-ENG-G6-2TDI',oem:'03L100090T',avail:'in',icon:'⚙️',desc:'Golf 6 2.0 TDI engine. 132,000km. Runs well. Includes turbo, injectors and timing kit.'},
+  {name:'Polo 6 Front Bumper',make:'Volkswagen',model:'Polo 6',year:'2014–2018',price:1450,oldPrice:2100,cond:'used',cat:'body',compat:'1.0 TSI 1.2 TSI 1.4 TDI',partNo:'VW-FB-POLO6',oem:'6C0807221',avail:'in',icon:'🚗',desc:'Front bumper in white. One small crack on lower lip. Fog light cut-outs present. Easy repair.'},
+  // Toyota
+  {name:'Hilux 2.4 GD-6 Alternator',make:'Toyota',model:'Hilux GD-6',year:'2016–2023',price:1850,oldPrice:null,cond:'oem',cat:'electrical',compat:'2GD-FTV Diesel',partNo:'TY-ALT-GD6',oem:'27060-0L100',avail:'in',icon:'⚡',desc:'New OEM-specification alternator for Hilux 2.4 & 2.8 GD-6. 150A output. Direct fit.'},
+  {name:'Fortuner Front Strut',make:'Toyota',model:'Fortuner GD-6',year:'2016–2022',price:1600,oldPrice:2200,cond:'oem',cat:'suspension',compat:'2.4 GD-6 2.8 GD-6',partNo:'TY-STRUT-FOR-F',oem:'48510-0K290',avail:'in',icon:'🔧',desc:'OEM replacement front strut assembly. Includes spring perch. Both sides available.'},
+  {name:'Corolla 1.6 Engine 1ZR',make:'Toyota',model:'Corolla',year:'2008–2016',price:12500,oldPrice:null,cond:'used',cat:'engine',compat:'1.6 VVT-i 1ZR-FE',partNo:'TY-ENG-1ZR',oem:'19000-0T020',avail:'low',icon:'⚙️',desc:'Complete 1ZR-FE engine. 168,000km. Runs smoothly. Compression tested and balanced.'},
+  {name:'Land Cruiser 200 Headlight',make:'Toyota',model:'Land Cruiser 200',year:'2008–2021',price:6200,oldPrice:9000,cond:'used',cat:'exterior',compat:'4.5 V8 4.6 V8',partNo:'TY-HL-LC200-R',oem:'81110-60F60',avail:'in',icon:'💡',desc:'Right headlight assembly with DRL. Lens perfect. All LEDs working. Removed from 2016 model.'},
+  // Haval
+  {name:'Haval H6 Suspension Arm',make:'Haval',model:'H6 2nd Gen',year:'2015–2020',price:950,oldPrice:1400,cond:'new',cat:'suspension',compat:'1.5T 2.0T',partNo:'HV-CA-H6F',oem:'2904100-P00',avail:'in',icon:'🔧',desc:'Front lower control arm. New aftermarket replacement. Comes with bush and ball joint installed.'},
+  {name:'Haval Jolion Front Bumper',make:'Haval',model:'Jolion',year:'2021–2024',price:2200,oldPrice:3100,cond:'used',cat:'body',compat:'1.5T HEV',partNo:'HV-FB-JOLION',oem:'2803100XKZ16A',avail:'in',icon:'🚗',desc:'Front bumper in white. No cracks. Minor scuffs. Sensors and radar cover included.'},
+  {name:'GWM P-Series Shock Absorber',make:'GWM',model:'P-Series',year:'2019–2024',price:1200,oldPrice:null,cond:'oem',cat:'suspension',compat:'2.0T 2.0 GDI',partNo:'GWM-SHOCK-PS-F',oem:'2905060-P00',avail:'in',icon:'🔧',desc:'New OEM-spec front shock absorber. Direct replacement. Sold individually.'},
+  {name:'Chery Tiggo 7 Pro Headlight',make:'Chery',model:'Tiggo 7 Pro',year:'2021–2024',price:3800,oldPrice:5200,cond:'used',cat:'exterior',compat:'1.6T',partNo:'CH-HL-T7P-L',oem:'T21-3772010',avail:'in',icon:'💡',desc:'Left LED headlight assembly. All LED functions working. Lens clear. Removed from accident vehicle.'},
+  // Nissan
+  {name:'NP300 Navara Front Differential',make:'Nissan',model:'NP300 Navara',year:'2015–2022',price:8500,oldPrice:null,cond:'used',cat:'drivetrain',compat:'2.3 dCi YS23',partNo:'NI-DIFF-NP300F',oem:'38510-4KA0A',avail:'low',icon:'⚙️',desc:'Front diff for 4x4 models. No noise or vibration. Tested before removal.'},
+  {name:'Almera N16 1.6 Engine',make:'Nissan',model:'Almera N16',year:'2000–2006',price:8200,oldPrice:10500,cond:'used',cat:'engine',compat:'1.6 QG16DE',partNo:'NI-ENG-QG16',oem:'10102-BM300',avail:'in',icon:'⚙️',desc:'Complete QG16 engine. 180,000km but recently rebuilt heads. Clean engine bay.'},
+  // Honda
+  {name:'Honda Civic FC 1.5T Turbo',make:'Honda',model:'Civic FC',year:'2016–2021',price:5400,oldPrice:7200,cond:'used',cat:'engine',compat:'1.5 VTEC Turbo L15B7',partNo:'HO-TURBO-FC',oem:'18900-RPY-G01',avail:'in',icon:'⚡',desc:'Turbocharger unit. 90,000km. No smoke or lag. VGT mechanism fully functional.'},
+  // MG
+  {name:'MG ZS EV Front Bumper',make:'MG',model:'ZS EV',year:'2019–2024',price:2900,oldPrice:4100,cond:'used',cat:'body',compat:'Electric',partNo:'MG-FB-ZS-EV',oem:'10247052',avail:'in',icon:'🚗',desc:'Front bumper with charging port door cut-out. Brushed silver finish. Minor stone chips.'}
+];
+
+// ===== ENQUIRY CART =====
+let cart = [];
+
+function addToCart(p){
+  const exists = cart.find(c=>c.partNo===p.partNo);
+  if(!exists){
+    cart.push({...p, qty:1});
+    updateCartBadge();
+    showToast(`✅ "${p.name}" added to enquiry`);
+  } else {
+    showToast('Already in your enquiry list');
+  }
+}
+
+function updateCartBadge(){
+  let badge=document.getElementById('cart-badge');
+  if(!badge){
+    const btn=document.getElementById('cart-btn');
+    if(!btn)return;
+    badge=document.createElement('span');
+    badge.id='cart-badge';
+    badge.style.cssText='position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center';
+    btn.style.position='relative';
+    btn.appendChild(badge);
+  }
+  badge.textContent=cart.length;
+  badge.style.display=cart.length?'flex':'none';
+}
+
+function showCart(){
+  if(!cart.length){showToast('Your enquiry list is empty');return;}
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:10000;display:flex;align-items:flex-start;justify-content:flex-end;padding:80px 24px 24px';
+  const panel=document.createElement('div');
+  panel.style.cssText='background:var(--bg3);border:1px solid var(--border);border-radius:8px;width:420px;max-height:80vh;overflow-y:auto;';
+  panel.innerHTML=`
+    <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg3)">
+      <h3 style="font-family:Rajdhani,sans-serif;font-size:20px;font-weight:700;color:var(--white)">Enquiry List (${cart.length})</h3>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:var(--text2);font-size:22px;cursor:pointer">×</button>
+    </div>
+    <div style="padding:16px 24px">
+      ${cart.map((p,i)=>`
+        <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="font-size:28px">${p.icon||'🔧'}</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600;color:var(--white)">${p.name}</div>
+            <div style="font-size:12px;color:var(--text3)">${p.make} ${p.model}</div>
+            <div style="font-size:14px;font-weight:700;color:var(--red);margin-top:4px">R ${p.price.toLocaleString()}</div>
+          </div>
+          <button onclick="removeFromCart(${i})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button>
+        </div>`).join('')}
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:600;color:var(--white);margin-bottom:16px">
+          <span>Total Est.</span>
+          <span>R ${cart.reduce((s,p)=>s+p.price,0).toLocaleString()}</span>
+        </div>
+        <button class="btn btn-wa" style="width:100%;justify-content:center;margin-bottom:10px" onclick="sendCartWhatsApp()">Send Enquiry via WhatsApp</button>
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="showToast('Enquiry submitted! We\\'ll contact you shortly.')">Submit Enquiry by Email</button>
+        <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:8px" onclick="cart=[];updateCartBadge();this.closest('[style*=fixed]').remove();showToast('Enquiry list cleared')">Clear List</button>
+      </div>
+    </div>`;
+  overlay.appendChild(panel);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove()});
+  document.body.appendChild(overlay);
+}
+
+function removeFromCart(i){
+  cart.splice(i,1);
+  updateCartBadge();
+  document.querySelector('[style*="fixed"][style*="10000"]')?.remove();
+  if(cart.length) showCart();
+}
+
+function sendCartWhatsApp(){
+  const items=cart.map(p=>`• ${p.name} (${p.make} ${p.model}) — R${p.price.toLocaleString()}`).join('%0A');
+  const msg=`Hi Mzansi Auto, I'd like to enquire about the following parts:%0A%0A${items}%0A%0APlease confirm availability and provide a final quote. Thank you.`;
+  window.open(`https://wa.me/27601234567?text=${msg}`,'_blank');
+}
+
+// Inject cart button into header
+function injectCartBtn(){
+  const actions=document.querySelector('.header-actions');
+  if(!actions||document.getElementById('cart-btn'))return;
+  const btn=document.createElement('button');
+  btn.id='cart-btn';
+  btn.className='header-action-btn';
+  btn.innerHTML='🛒 Enquiry List';
+  btn.onclick=showCart;
+  actions.insertBefore(btn,actions.lastChild);
+}
+
+// ===== TESTIMONIALS =====
+const TESTIMONIALS = [
+  {name:'Sipho M.',loc:'Johannesburg',rating:5,text:'Found the exact alternator for my Hilux GD-6 within minutes. Delivered next day. The part fitted perfectly. Will definitely use again.',vehicle:'Toyota Hilux 2.4'},
+  {name:'André v.W.',loc:'Cape Town',rating:5,text:'I was sceptical about ordering a used gearbox online but the grading and photos were spot on. No issues at all. Impressive operation.',vehicle:'BMW 325i E46'},
+  {name:'Fatima I.',loc:'Durban',rating:5,text:'Needed a front bumper for my W204 urgently. They had it in stock and WhatsApp communication was quick and professional.',vehicle:'Mercedes C200'},
+  {name:'Bongani N.',loc:'Pretoria',rating:5,text:'The Request a Part service is brilliant. Submitted my form on Monday, had a quote by Tuesday and part in my hands by Thursday.',vehicle:'VW Golf 7'},
+  {name:'Thandi D.',loc:'Port Elizabeth',rating:5,text:'Great prices on Haval parts. Not many places stock Chinese brand spares. Mzansi Auto had exactly what I needed in stock.',vehicle:'Haval H6 2.0T'},
+  {name:'Marco L.',loc:'Bloemfontein',rating:5,text:'Bought an engine for my Chery Tiggo. Came with a 90-day warranty and they even sent a video of it running before dispatch.',vehicle:'Chery Tiggo 7'},
+];
+
+function renderTestimonials(){
+  const el=document.getElementById('testimonials-grid');if(!el)return;
+  el.innerHTML=TESTIMONIALS.map(t=>`
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:24px;position:relative">
+      <div style="font-size:32px;color:var(--red);opacity:.3;position:absolute;top:16px;right:20px;font-family:Georgia,serif;line-height:1">"</div>
+      <div style="font-size:16px;color:var(--gold);margin-bottom:12px">${'★'.repeat(t.rating)}</div>
+      <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:16px">${t.text}</p>
+      <div style="display:flex;align-items:center;gap:10px;border-top:1px solid var(--border);padding-top:12px">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(224,32,32,.15);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--red)">${t.name[0]}</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--white)">${t.name}</div>
+          <div style="font-size:12px;color:var(--text3)">${t.loc} · ${t.vehicle}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ===== COMPARISON TOOL =====
+let compareList=[];
+
+function addToCompare(p){
+  if(compareList.length>=3){showToast('Max 3 parts to compare at once');return;}
+  if(compareList.find(c=>c.partNo===p.partNo)){showToast('Already in comparison');return;}
+  compareList.push(p);
+  showToast(`Added to compare: ${p.name}`);
+  renderCompareBar();
+}
+
+function renderCompareBar(){
+  let bar=document.getElementById('compare-bar');
+  if(!compareList.length){if(bar)bar.remove();return;}
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='compare-bar';
+    bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:2px solid var(--red);padding:12px 24px;z-index:9990;display:flex;align-items:center;gap:16px;flex-wrap:wrap';
+    document.body.appendChild(bar);
+  }
+  bar.innerHTML=`
+    <span style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap">Compare (${compareList.length}/3):</span>
+    ${compareList.map((p,i)=>`<span style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:12px;color:var(--text)">${p.name.substring(0,24)}… <button onclick="compareList.splice(${i},1);renderCompareBar()" style="background:none;border:none;color:var(--text3);cursor:pointer;margin-left:4px">×</button></span>`).join('')}
+    ${compareList.length>=2?`<button class="btn btn-primary btn-sm" onclick="showComparePage()">Compare Now</button>`:'<span style="font-size:12px;color:var(--text3)">Add 1 more to compare</span>'}
+    <button class="btn btn-outline btn-sm" onclick="compareList=[];renderCompareBar()">Clear</button>`;
+}
+
+function showComparePage(){
+  const p=compareList;
+  const keys=['make','model','year','cond','price','oem','partNo','avail'];
+  const labels={make:'Make',model:'Model',year:'Year',cond:'Condition',price:'Price (ZAR)',oem:'OEM Number',partNo:'Stock Code',avail:'Availability'};
+  const condLabel={new:'New',used:'Used',oem:'OEM',aftermarket:'Aftermarket',refurb:'Refurb'};
+  let html=`<div id="compare-bar2" style="background:var(--bg);min-height:100vh;padding:60px 24px">
+    <div style="max-width:1000px;margin:0 auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
+        <h1 style="font-family:Rajdhani,sans-serif;font-size:36px;font-weight:700;color:var(--white)">Part <span style="color:var(--red)">Comparison</span></h1>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('compare-modal').remove()">✕ Close</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="background:var(--bg3);padding:16px;text-align:left;color:var(--text2);font-size:12px;letter-spacing:.1em;border:1px solid var(--border)">Spec</th>
+              ${p.map(x=>`<th style="background:var(--bg3);padding:16px;text-align:center;color:var(--white);font-family:Rajdhani,sans-serif;font-size:18px;border:1px solid var(--border)">${x.icon||'🔧'} ${x.name}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${keys.map(k=>`<tr>
+              <td style="background:var(--bg2);padding:12px 16px;font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--border)">${labels[k]}</td>
+              ${p.map(x=>`<td style="background:var(--bg);padding:12px 16px;text-align:center;font-size:14px;color:var(--white);border:1px solid var(--border)">${k==='price'?'R '+x[k].toLocaleString():k==='cond'?(condLabel[x[k]]||x[k]):k==='avail'?(x[k]==='in'?'<span style="color:#4ade80">✓ In Stock</span>':x[k]==='low'?'<span style="color:#fbbf24">⚠ Low</span>':'<span style="color:#f87171">✗ Out</span>'):(x[k]||'—')}</td>`).join('')}
+            </tr>`).join('')}
+            <tr>
+              <td style="background:var(--bg2);padding:12px 16px;font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--border)">Action</td>
+              ${p.map(x=>`<td style="background:var(--bg);padding:12px 16px;text-align:center;border:1px solid var(--border)"><button class="btn btn-primary btn-sm" onclick="addToCart(${JSON.stringify(x).replace(/"/g,'&quot;')});showToast('Added to enquiry')">Enquire</button></td>`).join('')}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+  let modal=document.createElement('div');
+  modal.id='compare-modal';
+  modal.style.cssText='position:fixed;inset:0;z-index:10001;overflow-y:auto;background:var(--bg)';
+  modal.innerHTML=html;
+  document.body.appendChild(modal);
+}
+
+// ===== ENHANCED RENDER WITH COMPARE & CART =====
+function renderProdCardFull(p){
+  const condMap={new:'badge-new',used:'badge-used',oem:'badge-oem',aftermarket:'badge-sale',refurb:'badge-refurb'};
+  const condLabel={new:'New',used:'Used',oem:'OEM',aftermarket:'Aftermarket',refurb:'Refurb'};
+  const avail=p.avail==='in'?'In Stock':p.avail==='low'?'Low Stock':'Out of Stock';
+  const pj=JSON.stringify(p).replace(/"/g,'&quot;');
+  return `<div class="prod-card" onclick="showProduct(${pj})">
+    <div class="prod-img">
+      <div style="font-size:56px">${p.icon||'🔧'}</div>
+      <div class="prod-badges">
+        <span class="prod-badge ${condMap[p.cond]||'badge-new'}">${condLabel[p.cond]||'Part'}</span>
+        ${p.oldPrice?'<span class="prod-badge badge-sale">DEAL</span>':''}
+      </div>
+    </div>
+    <div class="prod-body">
+      <div class="prod-compat">🚗 ${p.make} ${p.model}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-part-no">OEM: ${p.oem||'—'}</div>
+      <div class="prod-avail ${p.avail==='low'?'low':p.avail==='out'?'out':''}">${avail}</div>
+      <div class="prod-bottom">
+        <div>
+          <div class="prod-price">R ${p.price.toLocaleString()}</div>
+          ${p.oldPrice?`<div class="prod-old-price">R ${p.oldPrice.toLocaleString()}</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="prod-action" title="Add to compare" onclick="event.stopPropagation();addToCompare(${pj})" style="background:var(--bg4);border:1px solid var(--border)">⚖</button>
+          <button class="prod-action" title="Add to enquiry" onclick="event.stopPropagation();addToCart(${pj})">+</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAllPartsGrid(container, filter=null){
+  const el=document.getElementById(container);if(!el)return;
+  let parts=ALL_PARTS;
+  if(filter) parts=parts.filter(filter);
+  el.innerHTML=(parts.length?parts:ALL_PARTS).map(renderProdCardFull).join('');
+}
+
+// ===== ENHANCED SHOW PRODUCT =====
+function showProduct(p){
+  if(typeof p==='string') p=JSON.parse(p);
+  document.getElementById('prod-breadcrumb').textContent=p.name;
+  document.getElementById('prod-detail-name').textContent=p.name;
+  document.getElementById('prod-price-detail').textContent=`R ${p.price.toLocaleString()}`;
+  const old=document.getElementById('prod-old-price-detail');
+  old.textContent=p.oldPrice?`R ${p.oldPrice.toLocaleString()}`:'';
+  const condLabel={new:'New',used:'Used',oem:'OEM',aftermarket:'Aftermarket',refurb:'Refurb'};
+  const condClass={new:'tag-blue',used:'',oem:'tag-gold',aftermarket:'',refurb:'tag-green'};
+  document.getElementById('prod-badges-detail').innerHTML=`<span class="tag ${condClass[p.cond]||''}">${condLabel[p.cond]||p.cond}</span>${p.oldPrice?'<span class="tag tag-green">DEAL — SAVE R'+(p.oldPrice-p.price).toLocaleString()+'</span>':''}`;
+  document.getElementById('prod-avail-detail').innerHTML=`<div class="prod-avail ${p.avail==='low'?'low':p.avail==='out'?'out':''}">${p.avail==='in'?'In Stock':p.avail==='low'?'Low Stock':'Out of Stock'}</div>`;
+  document.getElementById('gallery-main').innerHTML=`<div style="font-size:96px">${p.icon||'🔧'}</div>`;
+  document.getElementById('prod-meta-detail').innerHTML=`
+    <div class="prod-meta-item"><div class="prod-meta-label">Make</div><div class="prod-meta-value">${p.make}</div></div>
+    <div class="prod-meta-item"><div class="prod-meta-label">Model</div><div class="prod-meta-value">${p.model}</div></div>
+    <div class="prod-meta-item"><div class="prod-meta-label">Year</div><div class="prod-meta-value">${p.year}</div></div>
+    <div class="prod-meta-item"><div class="prod-meta-label">Condition</div><div class="prod-meta-value">${condLabel[p.cond]||p.cond}</div></div>
+    <div class="prod-meta-item"><div class="prod-meta-label">OEM Number</div><div class="prod-meta-value">${p.oem||'—'}</div></div>
+    <div class="prod-meta-item"><div class="prod-meta-label">Stock Code</div><div class="prod-meta-value">${p.partNo}</div></div>
+    <div class="prod-meta-item"><div class="prod-meta-label">Compatibility</div><div class="prod-meta-value">${p.compat||'—'}</div></div>
+    <div class="prod-meta-item"><div class="prod-meta-label">Category</div><div class="prod-meta-value" style="text-transform:capitalize">${p.cat||'—'}</div></div>`;
+  // patch actions
+  const actionsEl=document.querySelector('#page-product .prod-actions');
+  if(actionsEl){
+    const pj=JSON.stringify(p).replace(/"/g,'&quot;');
+    actionsEl.innerHTML=`
+      <button class="btn btn-primary btn-lg" onclick="addToCart(${pj})">+ Add to Enquiry</button>
+      <button class="btn btn-wa btn-lg" onclick="openWhatsApp()">WhatsApp Enquiry</button>
+      <button class="btn btn-outline btn-lg" onclick="addToCompare(${pj})">⚖ Compare</button>`;
+  }
+  if(p.desc){
+    let descEl=document.getElementById('prod-desc-box');
+    if(!descEl){
+      descEl=document.createElement('div');
+      descEl.id='prod-desc-box';
+      descEl.style.cssText='background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px;margin-top:12px';
+      document.querySelector('#page-product .prod-info')?.appendChild(descEl);
+    }
+    descEl.innerHTML=`<h4 style="font-family:Rajdhani,sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;color:var(--white)">Part Description</h4><p style="font-size:14px;color:var(--text2);line-height:1.7">${p.desc}</p>`;
+  }
+  showPage('product');
+}
+
+// ===== NEWSLETTER =====
+function subscribeNewsletter(){
+  const input=document.getElementById('nl-email');
+  if(!input?.value){showToast('Please enter a valid email');return;}
+  showToast('✅ Subscribed! You\'ll receive new arrivals and deals.');
+  if(input) input.value='';
+}
+
+// ===== LIVE SEARCH =====
+function setupLiveSearch(){
+  const inputs=[document.querySelector('.header-search input'),document.getElementById('hero-search')];
+  inputs.forEach(inp=>{
+    if(!inp)return;
+    inp.addEventListener('input',function(){
+      const q=this.value.toLowerCase().trim();
+      if(q.length<2)return;
+      const matches=ALL_PARTS.filter(p=>
+        p.name.toLowerCase().includes(q)||p.make.toLowerCase().includes(q)||
+        p.model.toLowerCase().includes(q)||(p.oem&&p.oem.toLowerCase().includes(q))||
+        (p.partNo&&p.partNo.toLowerCase().includes(q))
+      ).slice(0,6);
+      showSearchSuggestions(this, matches, q);
+    });
+    inp.addEventListener('blur',()=>setTimeout(()=>{document.querySelectorAll('.search-drop').forEach(d=>d.remove())},200));
+  });
+}
+
+function showSearchSuggestions(input, results, q){
+  document.querySelectorAll('.search-drop').forEach(d=>d.remove());
+  if(!results.length)return;
+  const drop=document.createElement('div');
+  drop.className='search-drop';
+  drop.style.cssText='position:absolute;top:100%;left:0;right:0;background:var(--bg3);border:1px solid var(--border);border-radius:4px;z-index:9999;margin-top:4px;overflow:hidden;max-height:320px;overflow-y:auto';
+  drop.innerHTML=results.map(p=>`
+    <div onclick="showProduct(${JSON.stringify(p).replace(/"/g,'&quot;')})" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background='transparent'">
+      <span style="font-size:24px">${p.icon||'🔧'}</span>
+      <div>
+        <div style="font-size:14px;color:var(--white);font-weight:500">${p.name}</div>
+        <div style="font-size:12px;color:var(--text3)">${p.make} ${p.model} · R ${p.price.toLocaleString()}</div>
+      </div>
+      <span style="margin-left:auto;font-size:11px;padding:2px 8px;border-radius:2px;background:rgba(224,32,32,.12);color:var(--red)">${p.cond.toUpperCase()}</span>
+    </div>`).join('')+`<div onclick="showPage('shop')" style="padding:10px 16px;font-size:13px;color:var(--text2);cursor:pointer;text-align:center;background:var(--bg2)" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text2)'">View all results for "<strong style="color:var(--white)">${q}</strong>"</div>`;
+  const parent=input.parentElement;
+  if(getComputedStyle(parent).position==='static') parent.style.position='relative';
+  parent.appendChild(drop);
+}
+
+// ===== INJECT TESTIMONIALS + NEWSLETTER INTO HOME =====
+function injectHomeSections(){
+  const home=document.getElementById('page-home');if(!home)return;
+  // Testimonials before SEO section
+  const seoSec=home.querySelector('.seo-section');
+  if(seoSec){
+    const tSection=document.createElement('section');
+    tSection.className='section';
+    tSection.style.cssText='border-top:1px solid var(--border)';
+    tSection.innerHTML=`
+      <div class="container">
+        <div class="sec-head" style="justify-content:center;text-align:center;flex-direction:column;align-items:center">
+          <div class="sec-label">Customer Reviews</div>
+          <h2 class="sec-title">What Our <span>Customers Say</span></h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px" id="testimonials-grid"></div>
+        <div style="text-align:center;margin-top:32px">
+          <span style="font-size:28px;color:var(--gold)">★★★★★</span>
+          <div style="font-size:14px;color:var(--text2);margin-top:6px">4.9/5 average rating from 1,200+ verified customers</div>
+        </div>
+      </div>`;
+    home.insertBefore(tSection,seoSec);
+  }
+  // Newsletter after SEO section
+  const nlSection=document.createElement('section');
+  nlSection.style.cssText='background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:56px 0';
+  nlSection.innerHTML=`
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+        <div>
+          <div class="sec-label" style="margin-bottom:10px">Stay Updated</div>
+          <h2 class="sec-title" style="font-size:32px">New Arrivals &amp; <span>Deals Direct</span> to You</h2>
+          <p style="font-size:14px;color:var(--text2);margin-top:10px">Subscribe to get notified about new stock, special deals on used parts, and exclusive offers for our subscribers.</p>
+        </div>
+        <div>
+          <div style="display:flex;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;overflow:hidden">
+            <input id="nl-email" class="form-input" type="email" placeholder="Your email address" style="border:none;border-radius:0;flex:1">
+            <button class="btn btn-primary" style="border-radius:0;white-space:nowrap" onclick="subscribeNewsletter()">Subscribe</button>
+          </div>
+          <p style="font-size:12px;color:var(--text3);margin-top:8px">No spam. Unsubscribe anytime. SA customers only.</p>
+        </div>
+      </div>
+    </div>`;
+  home.appendChild(nlSection);
+}
+
+// ===== INJECT QUICK VIEW STYLES =====
+function injectStyles(){
+  const style=document.createElement('style');
+  style.textContent=`
+    .search-drop::-webkit-scrollbar{width:4px}
+    .search-drop::-webkit-scrollbar-thumb{background:var(--border2)}
+    @media(max-width:768px){
+      .nl-grid{grid-template-columns:1fr!important}
+      #compare-modal table{min-width:600px}
+    }
+    .prod-card:hover .prod-img div{transform:scale(1.05);transition:transform .3s}
+    .prod-img{overflow:hidden}
+    .prod-img div{transition:transform .3s}
+    .filter-check input:checked+*{color:var(--white)}
+  `;
+  document.head.appendChild(style);
+}
+
 // ===== INIT =====
 (function init(){
+  injectStyles();
+  injectCartBtn();
   renderBrandsRow('all');
   renderCats();
+  // Home grids
   const newGrid=document.getElementById('new-arrivals-grid');
-  if(newGrid) newGrid.innerHTML=renderProdGrid();
+  if(newGrid) newGrid.innerHTML=ALL_PARTS.filter(p=>p.cond==='new'||p.cond==='oem').map(renderProdCardFull).join('');
   renderUsedDeals();
   renderSidebarMakes();
-  const shopGrid=document.getElementById('shop-grid');
-  if(shopGrid) shopGrid.innerHTML=renderProdGrid();
+  // Shop grid
+  renderAllPartsGrid('shop-grid');
+  // Category grids
+  renderAllPartsGrid('used-grid',p=>p.cond==='used');
+  renderAllPartsGrid('new-grid',p=>p.cond==='new');
+  renderAllPartsGrid('oem-grid',p=>p.cond==='oem');
+  renderAllPartsGrid('am-grid',p=>p.cond==='aftermarket');
+  renderAllPartsGrid('engine-grid',p=>p.cat==='engine');
+  renderAllPartsGrid('body-grid',p=>p.cat==='body');
+  renderAllPartsGrid('susp-grid',p=>p.cat==='suspension');
+  renderAllPartsGrid('elec-grid',p=>p.cat==='electrical');
+  renderAllPartsGrid('int-grid',p=>p.cat==='interior');
+  renderAllPartsGrid('ext-grid',p=>p.cat==='exterior');
+  // Used deals
+  const ud=document.getElementById('used-deals-grid');
+  if(ud) ud.innerHTML=ALL_PARTS.filter(p=>p.cond==='used'&&p.oldPrice).map(p=>`
+    <div class="deal-card" onclick="showProduct(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+      <div class="deal-img">${p.icon||'🔧'}</div>
+      <div class="deal-body">
+        <div class="deal-name">${p.name}</div>
+        <div class="deal-compat">${p.make} ${p.model}</div>
+        <div class="deal-bottom">
+          <div>
+            <div class="deal-price">R ${p.price.toLocaleString()}</div>
+            <div class="deal-save">Save R ${(p.oldPrice-p.price).toLocaleString()}</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();addToCart(${JSON.stringify(p).replace(/"/g,'&quot;')})">Enquire</button>
+        </div>
+      </div>
+    </div>`).join('');
+  // Inject extra home sections
+  injectHomeSections();
+  setTimeout(()=>{
+    renderTestimonials();
+    renderFAQ();
+    renderAdminRFQ();
+    setupLiveSearch();
+  },200);
 })();
 </script>
 </body>
